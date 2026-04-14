@@ -150,15 +150,6 @@ jobs:
 
       - uses: actions/checkout@v6
 
-      - name: Download OpenShift client tools (if needed)
-        run: |
-          if [[ ! -x ./bin/oc-mirror ]] || [[ ! -x ./bin/oc ]]; then
-            sudo make download-oc-tools VERSION="${OCP_VERSION}"
-          else
-            echo "Using existing ./bin/oc-mirror and ./bin/oc"
-            ls -la ./bin/oc-mirror ./bin/oc
-          fi
-
       - name: Generate imageset-config.yml (GA or PreGA per README)
         run: |
           set -euo pipefail
