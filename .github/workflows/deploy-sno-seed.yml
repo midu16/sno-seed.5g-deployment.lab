@@ -138,6 +138,7 @@ jobs:
 
 
   oc-mirror:
+    needs: clean-sno-seed
     runs-on: [self-hosted, linux, x64]
     timeout-minutes: 720
     env:
@@ -210,6 +211,7 @@ jobs:
           fi
 
   sno-seed-vm:
+    needs: oc-mirror
     runs-on: [self-hosted, linux, x64]
     timeout-minutes: 720
     env:
