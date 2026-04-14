@@ -61,7 +61,7 @@ fetch-certificate: ## Fetch registry certificate and update install-config.yaml
 	echo "$(GREEN)✓ Certificate fetched successfully$(NC)"; \
 	if [ -f workingdir/install-config.yaml ]; then \
 		echo "$(BLUE)Updating install-config.yaml with certificate...$(NC)"; \
-		awk -v cert="$$CERT" '/additionalTrustBundle: \|/{print;while((rc=getline)>0 && $$0 ~ /^ /){}print cert;if(rc>0)print;next}1' \
+		awk -v cert="$$CERT" '/additionalTrustBundle: \|/{print;while((rc=getline)>0 && $$0 ~ /^ /){}n=split(cert,a,"\n");for(i=1;i<=n;i++)if(a[i]!="")print "  " a[i];if(rc>0)print;next}1' \
 			workingdir/install-config.yaml > workingdir/install-config.yaml.tmp && \
 		mv workingdir/install-config.yaml.tmp workingdir/install-config.yaml; \
 		echo "$(GREEN)✓ Certificate updated in install-config.yaml$(NC)"; \
@@ -280,7 +280,8 @@ create-agent-iso: ## Create agent.iso for SNO installation
 		cp -r workingdir/openshift ./seed/; \
 	fi; \
 	echo "$(BLUE)Generating agent.iso...$(NC)"; \
-	./bin/openshift-install agent create image --dir ./seed/ --log-level=debug; \
+	./bin/openshift-install agent create image --dir ./seed/ --log-level=debug && \
+	test -f ./seed/agent.x86_64.iso && \
 	echo "$(GREEN)✓ agent.iso created at ./seed/agent.x86_64.iso$(NC)"
 
 clean: ## Clean generated files
