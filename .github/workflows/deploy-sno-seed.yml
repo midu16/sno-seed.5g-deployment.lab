@@ -270,7 +270,7 @@ jobs:
             echo "Using existing ./bin/oc-mirror and ./bin/oc"
             ls -la ./bin/oc-mirror ./bin/oc
           fi
-          
+
       - name: Extract openshift-install (Makefile — README)
         run: |
           set -euo pipefail
@@ -315,7 +315,42 @@ jobs:
         run: |
           set -euo pipefail
           export KUBECONFIG="${KUBECONFIG_PATH}"
-          sudo -E ./bin/oc get nodes
-          sudo -E ./bin/oc get clusterversion
-          sudo -E ./bin/oc get co
+          OC="./bin/oc"
+
+          echo "=== Nodes ==="
+          sudo -E "$OC" get nodes -o wide
+
+          echo "=== ClusterVersion ==="
+          sudo -E "$OC" get clusterversion
+
+          echo "=== Cluster operators ==="
+          sudo -E "$OC" get co
+
+          echo "=== CatalogSources (openshift-marketplace) ==="
+          sudo -E "$OC" get catalogsource -n openshift-marketplace -o wide
+
+          echo "::group::CatalogSource YAML (openshift-marketplace)"
+          sudo -E "$OC" get catalogsource -n openshift-marketplace -o yaml
+          echo "::endgroup::"
+
+          echo "=== PackageManifests (openshift-marketplace) ==="
+          pm_count=$(sudo -E "$OC" get packagemanifests -n openshift-marketplace --no-headers 2>/dev/null | wc -l | tr -d ' ')
+          echo "PackageManifest count: ${pm_count}"
+          sudo -E "$OC" get packagemanifests -n openshift-marketplace -o custom-columns=NAME:.metadata.name 2>/dev/null | head -80 || true
+          if [[ "${pm_count:-0}" -gt 79 ]]; then
+            echo "(listing truncated; total ${pm_count})"
+          fi
+
+          echo "=== ClusterServiceVersions (all namespaces) — name, version, phase ==="
+          sudo -E "$OC" get csv -A -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,VERSION:.spec.version,PHASE:.status.phase' 2>/dev/null || sudo -E "$OC" get csv -A
+
+          echo "=== Operators API (installed operators overview, if available) ==="
+          if sudo -E "$OC" get operators -A --request-timeout=30s &>/dev/null; then
+            sudo -E "$OC" get operators -A -o wide --request-timeout=30s
+          else
+            echo "(oc get operators not available or empty; CSV table above lists installed operator versions)"
+          fi
+
+          echo "=== Subscriptions (optional reference) ==="
+          sudo -E "$OC" get subscription -A -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,CHANNEL:.spec.channel,CURRENT:.status.currentCSV' 2>/dev/null | head -60 || true
 
