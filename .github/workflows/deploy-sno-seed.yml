@@ -185,30 +185,49 @@ jobs:
           echo "Workspace: ${WS}"
           echo "Config: ${CFG}"
 
-          # Registry creds live in DOCKER_CONFIG; use sudo when config is under /root
-          if [[ "${DOCKER_CONFIG}" == /root/* ]]; then
-            sudo -E env DOCKER_CONFIG="${DOCKER_CONFIG}" ./bin/oc-mirror \
-              -c "${CFG}" \
-              --v2 \
-              --workspace "${WS}" \
-              "${DEST}" \
-              --max-nested-paths 10 \
-              --parallel-images "${PI}" \
-              --parallel-layers "${PL}" \
-              --dest-tls-verify=false \
-              --log-level "${LOG}"
-          else
-            ./bin/oc-mirror \
-              -c "${CFG}" \
-              --v2 \
-              --workspace "${WS}" \
-              "${DEST}" \
-              --max-nested-paths 10 \
-              --parallel-images "${PI}" \
-              --parallel-layers "${PL}" \
-              --dest-tls-verify=false \
-              --log-level "${LOG}"
-          fi
+          max_attempts=5
+          for attempt in $(seq 1 "${max_attempts}"); do
+            echo "oc-mirror attempt ${attempt}/${max_attempts}"
+            mirror_ok=0
+            # Registry creds live in DOCKER_CONFIG; use sudo when config is under /root
+            if [[ "${DOCKER_CONFIG}" == /root/* ]]; then
+              if sudo -E env DOCKER_CONFIG="${DOCKER_CONFIG}" ./bin/oc-mirror \
+                -c "${CFG}" \
+                --v2 \
+                --workspace "${WS}" \
+                "${DEST}" \
+                --max-nested-paths 10 \
+                --parallel-images "${PI}" \
+                --parallel-layers "${PL}" \
+                --dest-tls-verify=false \
+                --log-level "${LOG}"; then
+                mirror_ok=1
+              fi
+            else
+              if ./bin/oc-mirror \
+                -c "${CFG}" \
+                --v2 \
+                --workspace "${WS}" \
+                "${DEST}" \
+                --max-nested-paths 10 \
+                --parallel-images "${PI}" \
+                --parallel-layers "${PL}" \
+                --dest-tls-verify=false \
+                --log-level "${LOG}"; then
+                mirror_ok=1
+              fi
+            fi
+            if [[ "${mirror_ok}" -eq 1 ]]; then
+              echo "oc-mirror succeeded on attempt ${attempt}"
+              break
+            fi
+            if [[ "${attempt}" -ge "${max_attempts}" ]]; then
+              echo "::error::oc-mirror failed after ${max_attempts} attempts"
+              exit 1
+            fi
+            echo "oc-mirror failed (attempt ${attempt}/${max_attempts}); retrying in 60s..."
+            sleep 60
+          done
 
   sno-seed-vm:
     needs: oc-mirror
