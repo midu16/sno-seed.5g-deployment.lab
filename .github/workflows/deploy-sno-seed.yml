@@ -209,6 +209,18 @@ jobs:
               --log-level "${LOG}"
           fi
 
+  sno-seed-vm:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 720
+    env:
+      KUBECONFIG_PATH: ${{ github.workspace }}/seed/auth/kubeconfig
+
+    steps:
+      - name: Fix workspace ownership
+        run: sudo chown -R "$(whoami):$(whoami)" "${GITHUB_WORKSPACE}/"
+
+      - uses: actions/checkout@v6
+
       - name: Review generated cluster resources (README)
         run: |
           echo "Generated cluster resources (${{ github.event.inputs.workspace_dir }}/working-dir/cluster-resources/):"

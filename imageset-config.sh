@@ -580,7 +580,6 @@ mirror:
       - name: stable-1.4
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.18
   - name: registry.redhat.io/rhel8/support-tools:latest
 EOF
 }
@@ -631,7 +630,6 @@ mirror:
       - name: stable
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.19
   - name: registry.redhat.io/rhel8/support-tools:latest
   - name: registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:v2.14
   helm: {}
@@ -684,7 +682,6 @@ mirror:
       - name: stable
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.20
   - name: registry.redhat.io/rhel8/support-tools:latest
   - name: registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:2.14.0-1
   helm: {}
@@ -737,7 +734,6 @@ mirror:
       - name: stable
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.21
   - name: registry.redhat.io/rhel8/support-tools:latest
   - name: registry.redhat.io/rhacm2/multicluster-operators-subscription-rhel9:v2.15.0-1
   helm: {}
