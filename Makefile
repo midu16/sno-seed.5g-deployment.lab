@@ -61,7 +61,7 @@ fetch-certificate: ## Fetch registry certificate and update install-config.yaml
 	echo "$(GREEN)✓ Certificate fetched successfully$(NC)"; \
 	if [ -f workingdir/install-config.yaml ]; then \
 		echo "$(BLUE)Updating install-config.yaml with certificate...$(NC)"; \
-		awk -v cert="$$CERT" '/additionalTrustBundle: \|/{print;getline;while($$0 ~ /^ /){getline}print cert;next}1' \
+		awk -v cert="$$CERT" '/additionalTrustBundle: \|/{print;while((rc=getline)>0 && $$0 ~ /^ /){}print cert;if(rc>0)print;next}1' \
 			workingdir/install-config.yaml > workingdir/install-config.yaml.tmp && \
 		mv workingdir/install-config.yaml.tmp workingdir/install-config.yaml; \
 		echo "$(GREEN)✓ Certificate updated in install-config.yaml$(NC)"; \
