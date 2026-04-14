@@ -155,14 +155,56 @@ generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=registr
 	mkdir -p ./bin; \
 	echo "$(BLUE)Release Image: $(RELEASE_IMAGE)$(NC)"; \
 	echo "$(BLUE)Extracting openshift-install...$(NC)"; \
-	DOCKER_CONFIG=.docker ./bin/oc adm release extract \
+	tmpreg=""; \
+	RI='$(RELEASE_IMAGE)'; \
+	rest=$${RI%:*}; \
+	mirror_art=""; mirror_ocprel=""; \
+	if echo "$$rest" | grep -q '/openshift/release-images$$'; then \
+		mirror_art=$$(echo "$$rest" | sed 's|/openshift/release-images$$|/openshift/release|'); \
+		mirror_ocprel="$$rest"; \
+	elif echo "$$rest" | grep -q '/openshift/release$$'; then \
+		mirror_art="$$rest"; \
+		mirror_ocprel=$$(echo "$$rest" | sed 's|/openshift/release$$|/openshift/release-images|'); \
+	fi; \
+	if [ -n "$$mirror_art" ] && [ "$(SKIP_RELEASE_REGISTRY_MIRROR)" != "1" ]; then \
+		tmpreg=$$(mktemp); \
+		printf '%s\n' \
+			'[[registry]]' \
+			'location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"' \
+			'' \
+			'[[registry.mirror]]' \
+			"location = \"$$mirror_art\"" \
+			'insecure = true' \
+			'mirror-by-digest-only = true' \
+			'' \
+			'[[registry]]' \
+			'location = "quay.io/openshift-release-dev/ocp-release"' \
+			'' \
+			'[[registry.mirror]]' \
+			"location = \"$$mirror_ocprel\"" \
+			'insecure = true' \
+			'mirror-by-digest-only = true' \
+			> "$$tmpreg"; \
+		echo "$(BLUE)Using pull-through mirror map (containers): quay.io/openshift-release-dev → $$mirror_art / $$mirror_ocprel$(NC)"; \
+		export CONTAINERS_REGISTRIES_CONF="$$tmpreg"; \
+	fi; \
+	export DOCKER_CONFIG=.docker; \
+	if ./bin/oc adm release extract \
+		--registry-config="$$(pwd)/.docker/config.json" \
 		--command=openshift-install \
 		--to=./bin/ \
 		--insecure=true \
-		"$(RELEASE_IMAGE)"; \
-	chmod +x ./bin/openshift-install; \
-	echo "$(GREEN)✓ openshift-install extracted to ./bin/openshift-install$(NC)"; \
-	./bin/openshift-install version
+		'$(RELEASE_IMAGE)'; then \
+		chmod +x ./bin/openshift-install; \
+		echo "$(GREEN)✓ openshift-install extracted to ./bin/openshift-install$(NC)"; \
+		./bin/openshift-install version; \
+		ec=0; \
+	else \
+		ec=1; \
+		echo "$(RED)✗ oc adm release extract failed (disconnected: mirror paths must match install-config imageContentSources; set SKIP_RELEASE_REGISTRY_MIRROR=1 to disable remap)$(NC)"; \
+	fi; \
+	[ -z "$$tmpreg" ] || rm -f "$$tmpreg"; \
+	exit $$ec
 
 imageset-config.yml: ## Generate imageset-config.yml (OCP_VERSION from VERSION file or specify OCP_VERSION=x.y.z)
 	@echo "$(GREEN)Generating imageset-config.yml...$(NC)"
