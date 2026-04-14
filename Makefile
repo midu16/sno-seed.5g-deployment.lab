@@ -137,11 +137,12 @@ download-oc-tools: ## Download oc-mirror and oc tools (VERSION from VERSION file
 	if [ -f ./bin/oc ]; then ./bin/oc version --client; fi; \
 	if [ -f ./bin/oc-mirror ]; then ./bin/oc-mirror version; fi
 
-generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=registry/image:tag)
+generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=... optional: IDMS_FILE=path SKIP_RELEASE_REGISTRY_MIRROR=1)
 	@echo "$(GREEN)Generating openshift-install...$(NC)"
 	@if [ -z "$(RELEASE_IMAGE)" ]; then \
 		echo "$(RED)✗ Error: RELEASE_IMAGE must be set.$(NC)"; \
 		echo "$(YELLOW)Usage: make generate-openshift-install RELEASE_IMAGE=infra.5g-deployment.lab:8443/seed/openshift/release-images:4.18.27-x86_64$(NC)"; \
+		echo "$(YELLOW)Optional: IDMS_FILE=path/to/ImageDigestMirrorSet.yaml (otherwise derived from RELEASE_IMAGE)$(NC)"; \
 		exit 1; \
 	fi; \
 	if [ ! -f ./bin/oc ]; then \
@@ -155,7 +156,8 @@ generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=registr
 	mkdir -p ./bin; \
 	echo "$(BLUE)Release Image: $(RELEASE_IMAGE)$(NC)"; \
 	echo "$(BLUE)Extracting openshift-install...$(NC)"; \
-	tmpreg=""; \
+	tmpidms=""; \
+	idms_path=""; \
 	RI='$(RELEASE_IMAGE)'; \
 	rest=$${RI%:*}; \
 	mirror_art=""; mirror_ocprel=""; \
@@ -166,30 +168,35 @@ generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=registr
 		mirror_art="$$rest"; \
 		mirror_ocprel=$$(echo "$$rest" | sed 's|/openshift/release$$|/openshift/release-images|'); \
 	fi; \
-	if [ -n "$$mirror_art" ] && [ "$(SKIP_RELEASE_REGISTRY_MIRROR)" != "1" ]; then \
-		tmpreg=$$(mktemp); \
+	if [ -n "$(IDMS_FILE)" ] && [ -f "$(IDMS_FILE)" ]; then \
+		idms_path="$(IDMS_FILE)"; \
+		echo "$(BLUE)Using IDMS_FILE=$$idms_path (oc --idms-file)$(NC)"; \
+	elif [ -n "$$mirror_art" ] && [ "$(SKIP_RELEASE_REGISTRY_MIRROR)" != "1" ]; then \
+		tmpidms=$$(mktemp); \
 		printf '%s\n' \
-			'[[registry]]' \
-			'location = "quay.io/openshift-release-dev/ocp-v4.0-art-dev"' \
-			'' \
-			'[[registry.mirror]]' \
-			"location = \"$$mirror_art\"" \
-			'insecure = true' \
-			'mirror-by-digest-only = true' \
-			'' \
-			'[[registry]]' \
-			'location = "quay.io/openshift-release-dev/ocp-release"' \
-			'' \
-			'[[registry.mirror]]' \
-			"location = \"$$mirror_ocprel\"" \
-			'insecure = true' \
-			'mirror-by-digest-only = true' \
-			> "$$tmpreg"; \
-		echo "$(BLUE)Using pull-through mirror map (containers): quay.io/openshift-release-dev → $$mirror_art / $$mirror_ocprel$(NC)"; \
-		export CONTAINERS_REGISTRIES_CONF="$$tmpreg"; \
+			'apiVersion: config.openshift.io/v1' \
+			'kind: ImageDigestMirrorSet' \
+			'metadata:' \
+			'  name: mirror-for-release-extract' \
+			'spec:' \
+			'  imageDigestMirrors:' \
+			'  - source: quay.io/openshift-release-dev/ocp-v4.0-art-dev' \
+			'    mirrors:' \
+			"    - $$mirror_art" \
+			'  - source: quay.io/openshift-release-dev/ocp-release' \
+			'    mirrors:' \
+			"    - $$mirror_ocprel" \
+			> "$$tmpidms"; \
+		idms_path="$$tmpidms"; \
+		echo "$(BLUE)Using generated ImageDigestMirrorSet (oc --idms-file): art-dev → $$mirror_art ; ocp-release → $$mirror_ocprel$(NC)"; \
+	fi; \
+	idms_arg=""; \
+	if [ -n "$$idms_path" ]; then \
+		idms_arg="--idms-file=$$idms_path"; \
 	fi; \
 	export DOCKER_CONFIG=.docker; \
 	if ./bin/oc adm release extract \
+		$$idms_arg \
 		--registry-config="$$(pwd)/.docker/config.json" \
 		--command=openshift-install \
 		--to=./bin/ \
@@ -201,9 +208,9 @@ generate-openshift-install: ## Generate openshift-install (RELEASE_IMAGE=registr
 		ec=0; \
 	else \
 		ec=1; \
-		echo "$(RED)✗ oc adm release extract failed (disconnected: mirror paths must match install-config imageContentSources; set SKIP_RELEASE_REGISTRY_MIRROR=1 to disable remap)$(NC)"; \
+		echo "$(RED)✗ oc adm release extract failed. For airgap: mirror must include release + release-images; paths must match install-config imageContentSources. Override with IDMS_FILE=... or set SKIP_RELEASE_REGISTRY_MIRROR=1.$(NC)"; \
 	fi; \
-	[ -z "$$tmpreg" ] || rm -f "$$tmpreg"; \
+	[ -z "$$tmpidms" ] || rm -f "$$tmpidms"; \
 	exit $$ec
 
 imageset-config.yml: ## Generate imageset-config.yml (OCP_VERSION from VERSION file or specify OCP_VERSION=x.y.z)
