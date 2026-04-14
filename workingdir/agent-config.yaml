@@ -1,0 +1,44 @@
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: seed
+rendezvousIP: 172.16.30.51
+additionalNTPSources:
+  - 0.rhel.pool.ntp.org
+  - 1.rhel.pool.ntp.org
+hosts:
+  - hostname: seed-ctlplane-0.seed.5g-deployment.lab
+    role: master
+    interfaces:
+      - name: enp1s0
+        macAddress: aa:aa:aa:aa:05:01
+    rootDeviceHints:
+      deviceName: "/dev/vda"
+    networkConfig:
+      interfaces:
+        - name: enp1s0
+          type: ethernet
+          state: up
+          mac-address: aa:aa:aa:aa:05:01
+          ipv4:
+            enabled: true
+            address:
+              - ip: 172.16.30.51
+                prefix-length: 24
+            dhcp: false
+          ipv6:
+            enabled: false
+        - name: br-ex
+          type: linux-bridge
+          state: up
+          mtu: 1400
+      dns-resolver:
+        config:
+          server:
+            - 172.16.30.1
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 172.16.30.1
+            next-hop-interface: enp1s0
+            table-id: 254

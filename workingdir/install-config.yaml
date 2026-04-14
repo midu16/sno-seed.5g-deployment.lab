@@ -1,0 +1,38 @@
+apiVersion: v1
+baseDomain: 5g-deployment.lab
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  replicas: 1
+metadata:
+  name: seed
+networking:
+  clusterNetwork:
+  - cidr: 172.21.0.0/16
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 172.16.30.0/24
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.22.0.0/16
+platform:
+  none: {}
+pullSecret: '{"auths":{"infra.5g-deployment.lab:8443":{"auth":"<redacted>"}}}'
+sshKey: 'ssh-ed25519 <redacted>'
+imageContentSources:
+  - mirrors:
+    - infra.5g-deployment.lab:8443/seed/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+  - mirrors:
+    - infra.5g-deployment.lab:8443/seed/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  <redacted>
+  -----END CERTIFICATE-----

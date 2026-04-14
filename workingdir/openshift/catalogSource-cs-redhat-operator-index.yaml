@@ -1,0 +1,9 @@
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: redhat-operators-disconnected
+  namespace: openshift-marketplace
+spec:
+  image: infra.5g-deployment.lab:8443/hub-demo/openshift-marketplace/redhat-operators-disconnected:v4.18
+  sourceType: grpc

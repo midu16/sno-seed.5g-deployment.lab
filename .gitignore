@@ -1,0 +1,61 @@
+# oc-mirror log files
+.oc-mirror.log
+**/.oc-mirror.log
+*.oc-mirror.log
+./mirror
+.mirror/
+mirror/
+# Custom operator index directory and all its contents
+catalog/custom-operator-index/
+catalog/index.json
+
+# OPM binaries
+catalog/opm-*
+catalog/opm-linux-*
+catalog/opm-rhel*
+oc*
+oc-mirror*
+kubectl*
+bin/
+openshift-client-linux-*
+openshift-install-linux-*
+
+# Temporary working directories
+abi-templater/workingdir/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.docker/
+seed/
+workingdir/install-config.yaml.bak
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+*.pdf
+
+# Mermaid generated images
+mermaid-images/
+
+# Kubeconfig files
+kubeconfig
+*.kubeconfig
+**/kubeconfig
+imageset-config.yml
+*imageset.yml

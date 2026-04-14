@@ -1,0 +1,11 @@
+# OpenShift Cluster Platform Version Configuration
+# This file defines the default OpenShift version and deployment type
+# Override by setting environment variables
+
+# Deployment type: "ga" or "prega"
+DEPLOYMENT_TYPE=prega
+
+# OpenShift version
+# GA versions: 4.18.27, 4.19.0, 4.20.0, 4.21.0
+# PreGA versions: 4.22.0, 4.23.0
+OCP_VERSION=4.22.0-ec.5

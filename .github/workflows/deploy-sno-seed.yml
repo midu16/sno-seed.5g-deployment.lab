@@ -1,0 +1,276 @@
+name: Deploy SNO Seed Cluster
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sno-seed-deployment
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_type:
+        description: "ImageSet mode (README) — ga → make imageset-ga; prega → make imageset-prega"
+        type: choice
+        options:
+          - prega
+          - ga
+        required: true
+        default: prega
+      ocp_version:
+        description: "OpenShift version (make download-oc-tools, imageset-*, release image tag)"
+        required: true
+        default: "4.22.0-ec.5"
+      registry_url:
+        description: "Mirror registry host:port (no docker:// prefix)"
+        required: true
+        default: "infra.5g-deployment.lab:8443"
+      dest_namespace:
+        description: "Destination path on registry (e.g. seed)"
+        required: true
+        default: "seed"
+      imageset_config:
+        description: "Image set config file in repo root"
+        required: true
+        default: "imageset-config.yml"
+      workspace_dir:
+        description: "Local workspace directory for oc-mirror (file:// prefix added automatically)"
+        required: true
+        default: "seed"
+      docker_config:
+        description: "Path to Docker config with registry pull secret (runner: often /root/.docker)"
+        required: true
+        default: "/root/.docker"
+      log_level:
+        description: "oc-mirror log level"
+        required: true
+        default: "debug"
+      parallel_images:
+        description: "Parallel images"
+        required: true
+        default: "10"
+      parallel_layers:
+        description: "Parallel layers"
+        required: true
+        default: "10"
+      remote_seed_host:
+        description: "Optional — SSH host for extra VM cleanup (empty skips remote VM step)"
+        required: false
+        default: ""
+      remote_seed_vm:
+        description: "Optional — VM name on remote_seed_host (used with remote_seed_host)"
+        required: false
+        default: ""
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  OCP_VERSION: ${{ github.event.inputs.ocp_version }}
+  REGISTRY_URL: ${{ github.event.inputs.registry_url }}
+  REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+  REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+jobs:
+  clean-sno-seed:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 180
+    env:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+    steps:
+      - name: Fix workspace ownership
+        run: sudo chown -R "$(whoami):$(whoami)" "${GITHUB_WORKSPACE}/"
+
+      - name: 🗑️ Clean up previous SNO SEED Virtual
+        run: |
+          if sudo kcli list plan | grep -q "sno-seed "; then
+            echo "Deleting sno-seed plan on local host..."
+            sudo kcli delete plan sno-seed -y
+          else
+            echo "Plan sno-seed does not exist on local host — skipping."
+          fi
+          if sudo ssh root@INBACRNRDL0103 'sudo kcli list plan | grep -q "sno-seed "'; then
+            echo "Deleting sno-seed plan on remote INBACRNRDL0103..."
+            sudo ssh root@INBACRNRDL0103 'sudo kcli delete plan sno-seed -y'
+          else
+            echo "Plan sno-seed does not exist on remote — skipping."
+          fi
+
+      - name: 🗑️ Clean up old registry content
+        run: sudo rm -rf /home/registry/data/docker || true
+
+      - name: 🗑️ Clean oc-mirror cache
+        run: sudo rm -rf /root/.oc-mirror/.cache || true
+
+      - name: 🗑️ Clean podman unused images
+        run: sudo podman system prune -a || true
+
+      - name: 🔄 Restart podman-registry
+        run: |
+          sudo systemctl restart podman-registry.service
+          sudo systemctl status podman-registry.service || true
+
+      - name: 🧹 Remove remote Seed VM (if provided)
+        if: ${{ github.event.inputs.remote_seed_host != '' && github.event.inputs.remote_seed_vm != '' }}
+        run: |
+          REMOTE="${{ github.event.inputs.remote_seed_host }}"
+          VM="${{ github.event.inputs.remote_seed_vm }}"
+          SSH_TIMEOUT=30
+
+          echo "Cleaning Seed VM: $VM on $REMOTE"
+
+          if ! timeout $SSH_TIMEOUT ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$REMOTE" true 2>/dev/null; then
+            echo "⚠️ Could not SSH to $REMOTE — skipping VM cleanup"
+            exit 0
+          fi
+
+          if ssh "$REMOTE" "kcli list vm | grep -q '^$VM'"; then
+            echo "Deleting VM $VM ..."
+            ssh "$REMOTE" "kcli delete vm $VM -y" || true
+          else
+            echo "ℹ️ VM $VM not found on remote host"
+          fi
+
+
+  oc-mirror:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 720
+    env:
+      KUBECONFIG_PATH: ${{ github.workspace }}/seed/auth/kubeconfig
+
+    steps:
+      - name: Fix workspace ownership
+        run: sudo chown -R "$(whoami):$(whoami)" "${GITHUB_WORKSPACE}/"
+
+      - uses: actions/checkout@v6
+
+      - name: Download OpenShift client tools (if needed)
+        run: |
+          if [[ ! -x ./bin/oc-mirror ]] || [[ ! -x ./bin/oc ]]; then
+            sudo make download-oc-tools VERSION="${OCP_VERSION}"
+          else
+            echo "Using existing ./bin/oc-mirror and ./bin/oc"
+            ls -la ./bin/oc-mirror ./bin/oc
+          fi
+
+      - name: Generate imageset-config.yml (GA or PreGA per README)
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event.inputs.deployment_type }}" == "ga" ]]; then
+            sudo make imageset-ga VERSION="${OCP_VERSION}"
+          else
+            sudo make imageset-prega VERSION="${OCP_VERSION}"
+          fi
+
+      - name: Run oc-mirror v2
+        run: |
+          set -euo pipefail
+          DOCKER_CONFIG="${{ github.event.inputs.docker_config }}"
+          export DOCKER_CONFIG
+          DEST="docker://${{ github.event.inputs.registry_url }}/${{ github.event.inputs.dest_namespace }}"
+          WS="file://${{ github.event.inputs.workspace_dir }}/"
+          CFG="${{ github.event.inputs.imageset_config }}"
+          LOG="${{ github.event.inputs.log_level }}"
+          PI="${{ github.event.inputs.parallel_images }}"
+          PL="${{ github.event.inputs.parallel_layers }}"
+
+          echo "DOCKER_CONFIG=${DOCKER_CONFIG}"
+          echo "Destination: ${DEST}"
+          echo "Workspace: ${WS}"
+          echo "Config: ${CFG}"
+
+          # Registry creds live in DOCKER_CONFIG; use sudo when config is under /root
+          if [[ "${DOCKER_CONFIG}" == /root/* ]]; then
+            sudo -E env DOCKER_CONFIG="${DOCKER_CONFIG}" ./bin/oc-mirror \
+              -c "${CFG}" \
+              --v2 \
+              --workspace "${WS}" \
+              "${DEST}" \
+              --max-nested-paths 10 \
+              --parallel-images "${PI}" \
+              --parallel-layers "${PL}" \
+              --dest-tls-verify=false \
+              --log-level "${LOG}"
+          else
+            ./bin/oc-mirror \
+              -c "${CFG}" \
+              --v2 \
+              --workspace "${WS}" \
+              "${DEST}" \
+              --max-nested-paths 10 \
+              --parallel-images "${PI}" \
+              --parallel-layers "${PL}" \
+              --dest-tls-verify=false \
+              --log-level "${LOG}"
+          fi
+
+      - name: Review generated cluster resources (README)
+        run: |
+          echo "Generated cluster resources (${{ github.event.inputs.workspace_dir }}/working-dir/cluster-resources/):"
+          ls -la "${{ github.event.inputs.workspace_dir }}/working-dir/cluster-resources/" || true
+
+      - name: 🔍 Validate AirGapped registry catalog
+        run: |
+          curl -sk -u "${REGISTRY_USERNAME}:${REGISTRY_PASSWORD}" \
+            "https://${REGISTRY_URL}/v2/_catalog" | jq . || echo "⚠️ Registry check failed"
+  
+      - name: ⚙️ Prepare install-config (Makefile — README Preparing the Installation)
+        run: |
+          set -euo pipefail
+          sudo make fetch-certificate REGISTRY_URL="${REGISTRY_URL}"
+          sudo make registry-pull-secret USERNAME="${REGISTRY_USERNAME}" PASSWORD="${REGISTRY_PASSWORD}" REGISTRY_URL="${REGISTRY_URL}"
+          sudo make update-sshkey SSHKEY_FILE="/root/.ssh/id_rsa.pub"
+
+      - name: Extract openshift-install (Makefile — README)
+        run: |
+          set -euo pipefail
+          RELEASE_IMAGE="${REGISTRY_URL}/${{ github.event.inputs.dest_namespace }}/openshift/release-images:${OCP_VERSION}-x86_64"
+          echo "RELEASE_IMAGE=${RELEASE_IMAGE}"
+          sudo make generate-openshift-install RELEASE_IMAGE="${RELEASE_IMAGE}"
+
+      - name: Generate agent ISO (Makefile — same as README openshift-install agent create)
+        run: sudo make create-agent-iso
+
+      - name: 📤 Copy agent ISO to webcache (README)
+        run: |
+          set -euo pipefail
+          SRC="${GITHUB_WORKSPACE}/seed/agent.x86_64.iso"
+          if [[ ! -f "$SRC" ]]; then
+            echo "❌ Expected ISO not found at $SRC (run make create-agent-iso)"
+            exit 1
+          fi
+          sudo mkdir -p /opt/webcache/data
+          sudo cp "$SRC" /opt/webcache/data/agent.x86_64.iso
+          echo "✅ Copied $SRC to /opt/webcache/data/agent.x86_64.iso"
+
+      - name: 🖥️ Create SNO VM
+        run: |
+          set -euo pipefail
+          sudo kcli create vm \
+            -P start=True \
+            -P uefi_legacy=true \
+            -P plan=sno-seed \
+            -P memory=32768 \
+            -P numcpus=16 \
+            -P disks=[120,50] \
+            -P nets='[{"name": "br0", "mac": "aa:aa:aa:aa:05:01"}]' \
+            -P uuid=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaa0501 \
+            -P name=seed-ctlplane-0 \
+            -P iso=/opt/webcache/data/agent.x86_64.iso
+
+      - name: ⏱️ Wait for installation to complete (README — Start the Installation)
+        run: sudo ./bin/openshift-install --dir "${GITHUB_WORKSPACE}/seed/" agent wait-for install-complete --log-level=info
+
+      - name: Access and verify cluster (README — Start the Installation & Post-Installation)
+        run: |
+          set -euo pipefail
+          export KUBECONFIG="${KUBECONFIG_PATH}"
+          sudo -E ./bin/oc get nodes
+          sudo -E ./bin/oc get clusterversion
+          sudo -E ./bin/oc get co
+

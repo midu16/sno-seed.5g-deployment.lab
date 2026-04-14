@@ -1,0 +1,90 @@
+# https://docs.openshift.com/container-platform/4.16/scalability_and_performance/recommended-performance-scale-practices/recommended-etcd-practices.html#move-etcd-different-disk_recommended-etcd-practices
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 98-var-lib-etcd
+spec:
+  config:
+    ignition:
+      version: 3.4.0
+    storage:
+      files:
+        - path: /etc/find-secondary-device
+          mode: 0755
+          contents:
+            source: data:text/plain;charset=utf-8;base64,IyEvYmluL2Jhc2gKc2V0IC11byBwaXBlZmFpbAogCmZvciBkZXZpY2UgaW4gL2Rldi92ZCogOyBkbwovdXNyL3NiaW4vYmxraWQgIiR7ZGV2aWNlfSIgJj4gL2Rldi9udWxsCiBpZiBbICQ/ID09IDIgIF07IHRoZW4KICAgIGVjaG8gInNlY29uZGFyeSBkZXZpY2UgZm91bmQgJHtkZXZpY2V9IgogICAgZWNobyAiY3JlYXRpbmcgZmlsZXN5c3RlbSBmb3IgZXRjZCBtb3VudCIKICAgIG1rZnMueGZzIC1MIHZhci1saWItZXRjZCAtZiAiJHtkZXZpY2V9IiAmPiAvZGV2L251bGwKICAgIHVkZXZhZG0gc2V0dGxlCiAgICB0b3VjaCAvZXRjL3Zhci1saWItZXRjZC1tb3VudAogICAgZXhpdAogZmkKZG9uZQplY2hvICJDb3VsZG4ndCBmaW5kIHNlY29uZGFyeSBibG9jayBkZXZpY2UhIiA+JjIKZXhpdCA3Nwo=
+    systemd:
+      units:
+        - name: find-secondary-device.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description=Find secondary device
+            DefaultDependencies=false
+            After=systemd-udev-settle.service
+            Before=local-fs-pre.target
+            ConditionPathExists=!/etc/var-lib-etcd-mount
+
+            [Service]
+            RemainAfterExit=yes
+            ExecStart=/etc/find-secondary-device
+
+            RestartForceExitStatus=77
+
+            [Install]
+            WantedBy=multi-user.target
+        - name: var-lib-etcd.mount
+          enabled: true
+          contents: |
+            [Unit]
+            Before=local-fs.target
+
+            [Mount]
+            What=/dev/disk/by-label/var-lib-etcd
+            Where=/var/lib/etcd
+            Type=xfs
+            TimeoutSec=120s
+
+            [Install]
+            RequiredBy=local-fs.target
+        - name: sync-var-lib-etcd-to-etcd.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description=Sync etcd data if new mount is empty
+            DefaultDependencies=no
+            After=var-lib-etcd.mount var.mount
+            Before=crio.service
+
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecCondition=/usr/bin/test ! -d /var/lib/etcd/member
+            ExecStart=/usr/sbin/setsebool -P rsync_full_access 1
+            ExecStart=/bin/rsync -ar /sysroot/ostree/deploy/rhcos/var/lib/etcd/ /var/lib/etcd/
+            ExecStart=/usr/sbin/semanage fcontext -a -t container_var_lib_t '/var/lib/etcd(/.*)?'
+            ExecStart=/usr/sbin/setsebool -P rsync_full_access 0
+            TimeoutSec=0
+
+            [Install]
+            WantedBy=multi-user.target graphical.target
+        - name: restorecon-var-lib-etcd.service
+          enabled: true
+          contents: |
+            [Unit]
+            Description=Restore recursive SELinux security contexts
+            DefaultDependencies=no
+            After=var-lib-etcd.mount
+            Before=crio.service
+
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=/sbin/restorecon -R /var/lib/etcd/
+            TimeoutSec=0
+
+            [Install]
+            WantedBy=multi-user.target graphical.target

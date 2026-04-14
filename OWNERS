@@ -1,0 +1,12 @@
+# OWNERS — approvers and reviewers for this repository.
+# Convention: https://github.com/kubernetes/community/blob/master/contributors/guide/owners.md
+
+approvers:
+  - midu16
+
+reviewers:
+  - midu16
+
+# Former approvers who no longer need review requests (optional).
+# emeritus_approvers:
+#   - example
