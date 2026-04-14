@@ -258,6 +258,10 @@ jobs:
           sudo make fetch-certificate REGISTRY_URL="${REGISTRY_URL}"
           sudo make registry-pull-secret USERNAME="${REGISTRY_USERNAME}" PASSWORD="${REGISTRY_PASSWORD}" REGISTRY_URL="${REGISTRY_URL}"
           sudo make update-sshkey SSHKEY_FILE="/root/.ssh/id_rsa.pub"
+          sudo make catalog-source-disconnected \
+            REGISTRY_URL="${REGISTRY_URL}" \
+            DEST_NAMESPACE="${{ github.event.inputs.dest_namespace }}" \
+            OCP_VERSION="${OCP_VERSION}"
       - name: Download OpenShift client tools (if needed)
         run: |
           if [[ ! -x ./bin/oc-mirror ]] || [[ ! -x ./bin/oc ]]; then

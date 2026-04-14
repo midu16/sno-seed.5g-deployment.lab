@@ -1,4 +1,4 @@
-.PHONY: help fetch-certificate registry-pull-secret update-sshkey download-oc-tools generate-openshift-install imageset-config.yml imageset-ga imageset-prega clean
+.PHONY: help fetch-certificate registry-pull-secret update-sshkey catalog-source-disconnected download-oc-tools generate-openshift-install imageset-config.yml imageset-ga imageset-prega clean
 
 # Default target
 .DEFAULT_GOAL := help
@@ -93,6 +93,29 @@ registry-pull-secret: ## Generate base64 pull secret (USERNAME=user PASSWORD=pas
 		sed -i "s|pullSecret:.*|pullSecret: '$$PULL_SECRET'|" workingdir/install-config.yaml; \
 		echo "$(GREEN)✓ Pull secret updated in install-config.yaml$(NC)"; \
 	fi
+
+catalog-source-disconnected: ## Template CatalogSource image tag vX.Y from OCP_VERSION (REGISTRY_URL DEST_NAMESPACE OCP_VERSION=4.22.0-ec.5)
+	@echo "$(GREEN)Templating disconnected CatalogSource image...$(NC)"
+	@if [ -z "$(REGISTRY_URL)" ] || [ -z "$(OCP_VERSION)" ]; then \
+		echo "$(RED)✗ Error: REGISTRY_URL and OCP_VERSION are required$(NC)"; \
+		echo "$(YELLOW)Usage: make catalog-source-disconnected REGISTRY_URL=infra.5g-deployment.lab:8443 DEST_NAMESPACE=seed OCP_VERSION=4.22.0-ec.5$(NC)"; \
+		echo "$(YELLOW)Image tag is major.minor only (e.g. v4.22). DEST_NAMESPACE defaults to seed if unset$(NC)"; \
+		exit 1; \
+	fi; \
+	cs="workingdir/openshift/catalogSource-cs-redhat-operator-index.yaml"; \
+	if [ ! -f "$$cs" ]; then \
+		echo "$(RED)✗ Error: $$cs not found$(NC)"; \
+		exit 1; \
+	fi; \
+	DNS="$(DEST_NAMESPACE)"; \
+	if [ -z "$$DNS" ]; then DNS=seed; fi; \
+	VER='$(OCP_VERSION)'; VER=$${VER#v}; \
+	MM=$$(echo "$$VER" | cut -d. -f1,2); \
+	tag="v$$MM"; \
+	img="$(REGISTRY_URL)/$$DNS/openshift-marketplace/redhat-operators-disconnected:$$tag"; \
+	echo "$(BLUE)CatalogSource spec.image: $$img (from OCP_VERSION=$(OCP_VERSION) → tag $$tag)$(NC)"; \
+	sed -i "s|^  image:.*|  image: $$img|" "$$cs"; \
+	echo "$(GREEN)✓ Updated $$cs$(NC)"
 
 update-sshkey: ## Update SSH key in install-config.yaml (SSHKEY_FILE=~/.ssh/id_rsa.pub)
 	@echo "$(GREEN)Updating SSH key in install-config.yaml...$(NC)"
