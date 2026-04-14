@@ -364,7 +364,6 @@ EOF
     cat >> "$output" << EOF
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v${major_minor}
   - name: registry.redhat.io/rhel8/support-tools:latest
 EOF
 

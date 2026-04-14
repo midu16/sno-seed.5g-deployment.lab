@@ -155,7 +155,6 @@ mirror:
     # ... more operators ...
   additionalImages:
   - name: registry.redhat.io/ubi8/ubi:latest
-  - name: registry.redhat.io/openshift4/ztp-site-generate-rhel8:v4.18
   - name: registry.redhat.io/rhel8/support-tools:latest
 ```
 
