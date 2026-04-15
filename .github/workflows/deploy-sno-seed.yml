@@ -356,6 +356,48 @@ jobs:
             echo "(oc get operators not available or empty; CSV table above lists installed operator versions)"
           fi
 
+          echo "=== Operator workload pods (namespaces from workingdir/openshift/99_02_operators.yaml) ==="
+          OPERATORS_YAML="${GITHUB_WORKSPACE}/workingdir/openshift/99_02_operators.yaml"
+          if [[ ! -f "${OPERATORS_YAML}" ]]; then
+            echo "::warning::Operator manifest not found at ${OPERATORS_YAML} — skipping namespace pod checks"
+          else
+            mapfile -t OPERATOR_NAMESPACES < <(awk '
+              /^kind: Namespace$/ { in_ns=1; next }
+              /^kind:/ && $0 != "kind: Namespace" { in_ns=0 }
+              in_ns && /^  name:/ { sub(/^  name:[[:space:]]*/, ""); print; in_ns=0; next }
+            ' "${OPERATORS_YAML}")
+            if [[ "${#OPERATOR_NAMESPACES[@]}" -eq 0 ]]; then
+              echo "::warning::No Namespace documents found in ${OPERATORS_YAML}"
+            else
+              echo "Namespaces from manifest (${#OPERATOR_NAMESPACES[@]}): ${OPERATOR_NAMESPACES[*]}"
+              pod_issues=0
+              for ns in "${OPERATOR_NAMESPACES[@]}"; do
+                echo "::group::Pods — namespace ${ns}"
+                if ! sudo -E "$OC" get namespace "${ns}" --request-timeout=30s &>/dev/null; then
+                  echo "::warning::Namespace ${ns} does not exist on the cluster yet"
+                  echo "::endgroup::"
+                  pod_issues=$((pod_issues + 1))
+                  continue
+                fi
+                sudo -E "$OC" get pods -n "${ns}" -o wide --request-timeout=60s || true
+                sudo -E "$OC" get events -n "${ns}" --field-selector=type!=Normal --no-headers 2>/dev/null | tail -20 \
+                  || echo "(no recent warning/error events, or events API unavailable)"
+                # Flag pods that are not Running, Succeeded, or Completed (best-effort; wide output above is canonical)
+                bad=$(sudo -E "$OC" get pods -n "${ns}" --no-headers --request-timeout=60s 2>/dev/null \
+                  | awk '$3 !~ /^(Running|Succeeded|Completed)$/' || true)
+                if [[ -n "${bad}" ]]; then
+                  echo "::warning::Namespace ${ns} has pod(s) not in Running/Succeeded/Completed:"
+                  echo "${bad}"
+                  pod_issues=$((pod_issues + 1))
+                fi
+                echo "::endgroup::"
+              done
+              if [[ "${pod_issues}" -gt 0 ]]; then
+                echo "::notice::One or more operator namespaces from 99_02_operators.yaml need attention (missing NS or non-ready pods). Review the grouped logs above."
+              fi
+            fi
+          fi
+
           echo "=== Subscriptions (optional reference) ==="
           sudo -E "$OC" get subscription -A -o custom-columns='NAMESPACE:.metadata.namespace,NAME:.metadata.name,CHANNEL:.spec.channel,CURRENT:.status.currentCSV' 2>/dev/null | head -60 || true
 
