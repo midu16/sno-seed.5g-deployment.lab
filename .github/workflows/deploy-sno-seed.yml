@@ -316,6 +316,102 @@ jobs:
       - name: ⏱️ Wait for installation to complete (README — Start the Installation)
         run: sudo ./bin/openshift-install --dir "${GITHUB_WORKSPACE}/seed/" agent wait-for install-complete --log-level=info
 
+      - name: Approve pending OLM InstallPlans (multi-pass for all operators)
+        run: |
+          set -euo pipefail
+          export KUBECONFIG="${KUBECONFIG_PATH}"
+          OC="./bin/oc"
+          # OLM creates InstallPlans per subscription over time; multiple passes cover every operator.
+          MAX_PASSES=48
+          SLEEP_SEC=15
+          MIN_PASSES_BEFORE_EARLY_EXIT=12
+          CONSECUTIVE_EMPTY_TO_STOP=5
+          empty_streak=0
+          for pass in $(seq 1 "${MAX_PASSES}"); do
+            mapfile -t lines < <(sudo -E "$OC" get installplan -A -o jsonpath='{range .items[?(@.status.phase=="RequiresApproval")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
+            if [[ "${#lines[@]}" -eq 0 ]] || [[ -z "${lines[0]:-}" ]]; then
+              empty_streak=$((empty_streak + 1))
+              echo "InstallPlan approval pass ${pass}/${MAX_PASSES}: none in RequiresApproval (empty streak ${empty_streak}/${CONSECUTIVE_EMPTY_TO_STOP})"
+              if [[ "${pass}" -ge "${MIN_PASSES_BEFORE_EARLY_EXIT}" ]] && [[ "${empty_streak}" -ge "${CONSECUTIVE_EMPTY_TO_STOP}" ]]; then
+                echo "No pending approvals for ${CONSECUTIVE_EMPTY_TO_STOP} consecutive passes (after ${MIN_PASSES_BEFORE_EARLY_EXIT} minimum passes) — done"
+                break
+              fi
+            else
+              empty_streak=0
+              echo "InstallPlan approval pass ${pass}/${MAX_PASSES}: approving ${#lines[@]} InstallPlan(s) in RequiresApproval"
+              for line in "${lines[@]}"; do
+                ns="${line%% *}"
+                name="${line#* }"
+                [[ -z "${ns}" || -z "${name}" ]] && continue
+                echo "  oc patch installplan ${name} -n ${ns} (approved=true)"
+                sudo -E "$OC" patch installplan "${name}" -n "${ns}" --type merge -p '{"spec":{"approved":true}}' || true
+              done
+            fi
+            if [[ "${pass}" -eq "${MAX_PASSES}" ]]; then
+              echo "Reached MAX_PASSES=${MAX_PASSES} — stopping approval loop"
+            fi
+            sleep "${SLEEP_SEC}"
+          done
+          echo "=== InstallPlans still in RequiresApproval (should be empty) ==="
+          if sudo -E "$OC" get installplan -A --no-headers 2>/dev/null | grep -q 'RequiresApproval'; then
+            sudo -E "$OC" get installplan -A -o wide
+            echo "::warning::Some InstallPlans still need approval; CSV wait step may fail — check subscriptions/catalog"
+          else
+            echo "(none in RequiresApproval)"
+          fi
+
+      - name: Wait for operator CSVs (seed/openshift day-1 manifests)
+        run: |
+          set -euo pipefail
+          export KUBECONFIG="${KUBECONFIG_PATH}"
+          OC="./bin/oc"
+          OPERATORS_YAML="${GITHUB_WORKSPACE}/workingdir/openshift/99_02_operators.yaml"
+          ARGO_YAML="${GITHUB_WORKSPACE}/workingdir/openshift/99_01_argo.yaml"
+          mapfile -t NS_LIST < <(
+            {
+              awk '
+                /^kind: Namespace$/ { in_ns=1; next }
+                /^kind:/ && $0 != "kind: Namespace" { in_ns=0 }
+                in_ns && /^  name:/ { sub(/^  name:[[:space:]]*/, ""); print; in_ns=0; next }
+              ' "${OPERATORS_YAML}" 2>/dev/null || true
+              awk '
+                /^kind: Namespace$/ { in_ns=1; next }
+                /^kind:/ && $0 != "kind: Namespace" { in_ns=0 }
+                in_ns && /^  name:/ { sub(/^  name:[[:space:]]*/, ""); print; in_ns=0; next }
+              ' "${ARGO_YAML}" 2>/dev/null || true
+            } | sort -u
+          )
+          if [[ "${#NS_LIST[@]}" -eq 0 ]]; then
+            echo "::warning::No namespaces parsed from operator manifests — skipping CSV wait"
+            exit 0
+          fi
+          echo "Waiting for Succeeded CSV in: ${NS_LIST[*]}"
+          failed=0
+          for ns in "${NS_LIST[@]}"; do
+            echo "::group::CSV wait — ${ns}"
+            ok=0
+            deadline=$((SECONDS + 2400))
+            while [[ $SECONDS -lt $deadline ]]; do
+              if sudo -E "$OC" get csv -n "${ns}" -o jsonpath='{range .items[*]}{.status.phase}{"\n"}{end}' 2>/dev/null | grep -qx 'Succeeded'; then
+                echo "CSV Succeeded in ${ns}"
+                ok=1
+                break
+              fi
+              sleep 15
+            done
+            if [[ "${ok}" -ne 1 ]]; then
+              echo "::error::Timeout waiting for Succeeded CSV in ${ns}"
+              sudo -E "$OC" get csv -n "${ns}" -o wide || true
+              sudo -E "$OC" get subscription -n "${ns}" -o yaml || true
+              sudo -E "$OC" get installplan -n "${ns}" -o wide || true
+              failed=1
+            fi
+            echo "::endgroup::"
+          done
+          if [[ "${failed}" -ne 0 ]]; then
+            exit 1
+          fi
+
       - name: Access and verify cluster (README — Start the Installation & Post-Installation)
         run: |
           set -euo pipefail
