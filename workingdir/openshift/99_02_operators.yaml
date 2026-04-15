@@ -1,0 +1,1994 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: advanced-cluster-management
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: advanced-cluster-management-50369
+  namespace: advanced-cluster-management
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: advanced-cluster-management
+  namespace: advanced-cluster-management
+spec:
+  installPlanApproval: Manual
+  name: advanced-cluster-management
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: release-2.17
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ansible-automation-platform-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ansible-automation-platform-operator-c027b
+  namespace: ansible-automation-platform-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ansible-automation-platform-operator
+  namespace: ansible-automation-platform-operator
+spec:
+  installPlanApproval: Manual
+  name: ansible-automation-platform-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-2.6
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ansible-cloud-addons-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ansible-cloud-addons-operator-4d6b2
+  namespace: ansible-cloud-addons-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ansible-cloud-addons-operator
+  namespace: ansible-cloud-addons-operator
+spec:
+  installPlanApproval: Manual
+  name: ansible-cloud-addons-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-2.5-cluster-scoped
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: aws-efs-csi-driver-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: aws-efs-csi-driver-operator-afa9f
+  namespace: aws-efs-csi-driver-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: aws-efs-csi-driver-operator
+  namespace: aws-efs-csi-driver-operator
+spec:
+  installPlanApproval: Manual
+  name: aws-efs-csi-driver-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: cephcsi-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cephcsi-operator-11c91
+  namespace: cephcsi-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: cephcsi-operator
+  namespace: cephcsi-operator
+spec:
+  installPlanApproval: Manual
+  name: cephcsi-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: cincinnati-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cincinnati-operator-8ebfc
+  namespace: cincinnati-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: cincinnati-operator
+  namespace: cincinnati-operator
+spec:
+  installPlanApproval: Manual
+  name: cincinnati-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: v1
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: cluster-logging
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cluster-logging-9d7a9
+  namespace: cluster-logging
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: cluster-logging
+  namespace: cluster-logging
+spec:
+  installPlanApproval: Manual
+  name: cluster-logging
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-6.4
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: cluster-observability-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cluster-observability-operator-3b23d
+  namespace: cluster-observability-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: cluster-observability-operator
+  namespace: cluster-observability-operator
+spec:
+  installPlanApproval: Manual
+  name: cluster-observability-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: development
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: clusterresourceoverride
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: clusterresourceoverride-e7899
+  namespace: clusterresourceoverride
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: clusterresourceoverride
+  namespace: clusterresourceoverride
+spec:
+  installPlanApproval: Manual
+  name: clusterresourceoverride
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: compliance-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: compliance-operator-39f87
+  namespace: compliance-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: compliance-operator
+  namespace: compliance-operator
+spec:
+  installPlanApproval: Manual
+  name: compliance-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: container-security-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: container-security-operator-3be93
+  namespace: container-security-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: container-security-operator
+  namespace: container-security-operator
+spec:
+  installPlanApproval: Manual
+  name: container-security-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-3.15
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: dpu-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: dpu-operator-a2f69
+  namespace: dpu-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: dpu-operator
+  namespace: dpu-operator
+spec:
+  installPlanApproval: Manual
+  name: dpu-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: gcp-filestore-csi-driver-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: gcp-filestore-csi-driver-operator-ec845
+  namespace: gcp-filestore-csi-driver-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: gcp-filestore-csi-driver-operator
+  namespace: gcp-filestore-csi-driver-operator
+spec:
+  installPlanApproval: Manual
+  name: gcp-filestore-csi-driver-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ingress-node-firewall
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ingress-node-firewall-16312
+  namespace: ingress-node-firewall
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ingress-node-firewall
+  namespace: ingress-node-firewall
+spec:
+  installPlanApproval: Manual
+  name: ingress-node-firewall
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: kubernetes-nmstate-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: kubernetes-nmstate-operator-6603d
+  namespace: kubernetes-nmstate-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: kubernetes-nmstate-operator
+  namespace: kubernetes-nmstate-operator
+spec:
+  installPlanApproval: Manual
+  name: kubernetes-nmstate-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: lifecycle-agent
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: lifecycle-agent-c439d
+  namespace: lifecycle-agent
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: lifecycle-agent
+  namespace: lifecycle-agent
+spec:
+  installPlanApproval: Manual
+  name: lifecycle-agent
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: local-storage-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: local-storage-operator-94f88
+  namespace: local-storage-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: local-storage-operator
+  namespace: local-storage-operator
+spec:
+  installPlanApproval: Manual
+  name: local-storage-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: loki-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: loki-operator-68eba
+  namespace: loki-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: loki-operator
+  namespace: loki-operator
+spec:
+  installPlanApproval: Manual
+  name: loki-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-6.4
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: lvms-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: lvms-operator-b3404
+  namespace: lvms-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: lvms-operator
+  namespace: lvms-operator
+spec:
+  installPlanApproval: Manual
+  name: lvms-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: mcg-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: mcg-operator-60f31
+  namespace: mcg-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: mcg-operator
+  namespace: mcg-operator
+spec:
+  installPlanApproval: Manual
+  name: mcg-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: metallb-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: metallb-operator-3fbfa
+  namespace: metallb-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: metallb-operator
+  namespace: metallb-operator
+spec:
+  installPlanApproval: Manual
+  name: metallb-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: mta-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: mta-operator-e1765
+  namespace: mta-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: mta-operator
+  namespace: mta-operator
+spec:
+  installPlanApproval: Manual
+  name: mta-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-v8.0
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: mtr-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: mtr-operator-f69b8
+  namespace: mtr-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: mtr-operator
+  namespace: mtr-operator
+spec:
+  installPlanApproval: Manual
+  name: mtr-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: alpha
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: mtv-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: mtv-operator-7c4ba
+  namespace: mtv-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: mtv-operator
+  namespace: mtv-operator
+spec:
+  installPlanApproval: Manual
+  name: mtv-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: release-v2.8
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: multicluster-engine
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: multicluster-engine-b340e
+  namespace: multicluster-engine
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: multicluster-engine
+  namespace: multicluster-engine
+spec:
+  installPlanApproval: Manual
+  name: multicluster-engine
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-2.17
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: nfd
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: nfd-f1d62
+  namespace: nfd
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: nfd
+  namespace: nfd
+spec:
+  installPlanApproval: Manual
+  name: nfd
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: node-observability-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: node-observability-operator-d1ee4
+  namespace: node-observability-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: node-observability-operator
+  namespace: node-observability-operator
+spec:
+  installPlanApproval: Manual
+  name: node-observability-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: alpha
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: numaresources-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: numaresources-operator-24eff
+  namespace: numaresources-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: numaresources-operator
+  namespace: numaresources-operator
+spec:
+  installPlanApproval: Manual
+  name: numaresources-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: 4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: o-cloud-manager
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: o-cloud-manager-49c11
+  namespace: o-cloud-manager
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: o-cloud-manager
+  namespace: o-cloud-manager
+spec:
+  installPlanApproval: Manual
+  name: o-cloud-manager
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ocs-client-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ocs-client-operator-baaf2
+  namespace: ocs-client-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ocs-client-operator
+  namespace: ocs-client-operator
+spec:
+  installPlanApproval: Manual
+  name: ocs-client-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ocs-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ocs-operator-e351a
+  namespace: ocs-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ocs-operator
+  namespace: ocs-operator
+spec:
+  installPlanApproval: Manual
+  name: ocs-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-csi-addons-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-csi-addons-operator-502fa
+  namespace: odf-csi-addons-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-csi-addons-operator
+  namespace: odf-csi-addons-operator
+spec:
+  installPlanApproval: Manual
+  name: odf-csi-addons-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-dependencies
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-dependencies-1c141
+  namespace: odf-dependencies
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-dependencies
+  namespace: odf-dependencies
+spec:
+  installPlanApproval: Manual
+  name: odf-dependencies
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-external-snapshotter-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-external-snapshotter-operator-60fae
+  namespace: odf-external-snapshotter-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-external-snapshotter-operator
+  namespace: odf-external-snapshotter-operator
+spec:
+  installPlanApproval: Manual
+  name: odf-external-snapshotter-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-multicluster-orchestrator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-multicluster-orchestrator-fdc5e
+  namespace: odf-multicluster-orchestrator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-multicluster-orchestrator
+  namespace: odf-multicluster-orchestrator
+spec:
+  installPlanApproval: Manual
+  name: odf-multicluster-orchestrator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-operator-f45f3
+  namespace: odf-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-operator
+  namespace: odf-operator
+spec:
+  installPlanApproval: Manual
+  name: odf-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odf-prometheus-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odf-prometheus-operator-596e8
+  namespace: odf-prometheus-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odf-prometheus-operator
+  namespace: odf-prometheus-operator
+spec:
+  installPlanApproval: Manual
+  name: odf-prometheus-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odr-cluster-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odr-cluster-operator-7d598
+  namespace: odr-cluster-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odr-cluster-operator
+  namespace: odr-cluster-operator
+spec:
+  installPlanApproval: Manual
+  name: odr-cluster-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: odr-hub-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: odr-hub-operator-f2c7d
+  namespace: odr-hub-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: odr-hub-operator
+  namespace: odr-hub-operator
+spec:
+  installPlanApproval: Manual
+  name: odr-hub-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: openshift-cert-manager-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-cert-manager-operator-a840d
+  namespace: openshift-cert-manager-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: openshift-cert-manager-operator
+  namespace: openshift-cert-manager-operator
+spec:
+  installPlanApproval: Manual
+  name: openshift-cert-manager-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-v1
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: openshift-gitops-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-gitops-operator-9c762
+  namespace: openshift-gitops-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: openshift-gitops-operator
+  namespace: openshift-gitops-operator
+spec:
+  installPlanApproval: Manual
+  name: openshift-gitops-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: latest
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: openshift-pipelines-operator-rh
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-pipelines-operator-rh-4cdc2
+  namespace: openshift-pipelines-operator-rh
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: openshift-pipelines-operator-rh
+  namespace: openshift-pipelines-operator-rh
+spec:
+  installPlanApproval: Manual
+  name: openshift-pipelines-operator-rh
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: latest
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: pf-status-relay-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: pf-status-relay-operator-9c73f
+  namespace: pf-status-relay-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: pf-status-relay-operator
+  namespace: pf-status-relay-operator
+spec:
+  installPlanApproval: Manual
+  name: pf-status-relay-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: ptp-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: ptp-operator-824a8
+  namespace: ptp-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: ptp-operator
+  namespace: ptp-operator
+spec:
+  installPlanApproval: Manual
+  name: ptp-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: recipe
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: recipe-c0b39
+  namespace: recipe
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: recipe
+  namespace: recipe
+spec:
+  installPlanApproval: Manual
+  name: recipe
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: redhat-oadp-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: redhat-oadp-operator-57007
+  namespace: redhat-oadp-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: redhat-oadp-operator
+  namespace: redhat-oadp-operator
+spec:
+  installPlanApproval: Manual
+  name: redhat-oadp-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: rhacs-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhacs-operator-9c51a
+  namespace: rhacs-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: rhacs-operator
+  namespace: rhacs-operator
+spec:
+  installPlanApproval: Manual
+  name: rhacs-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: rhbk-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhbk-operator-7dfc6
+  namespace: rhbk-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: rhbk-operator
+  namespace: rhbk-operator
+spec:
+  installPlanApproval: Manual
+  name: rhbk-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-v26.4
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: rook-ceph-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rook-ceph-operator-647b2
+  namespace: rook-ceph-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: rook-ceph-operator
+  namespace: rook-ceph-operator
+spec:
+  installPlanApproval: Manual
+  name: rook-ceph-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable-4.22
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: secrets-store-csi-driver-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: secrets-store-csi-driver-operator-4ef8d
+  namespace: secrets-store-csi-driver-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: secrets-store-csi-driver-operator
+  namespace: secrets-store-csi-driver-operator
+spec:
+  installPlanApproval: Manual
+  name: secrets-store-csi-driver-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: self-node-remediation
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: self-node-remediation-3024d
+  namespace: self-node-remediation
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: self-node-remediation
+  namespace: self-node-remediation
+spec:
+  installPlanApproval: Manual
+  name: self-node-remediation
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: smb-csi-driver-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: smb-csi-driver-operator-b1713
+  namespace: smb-csi-driver-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: smb-csi-driver-operator
+  namespace: smb-csi-driver-operator
+spec:
+  installPlanApproval: Manual
+  name: smb-csi-driver-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: sriov-network-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: sriov-network-operator-f0520
+  namespace: sriov-network-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: sriov-network-operator
+  namespace: sriov-network-operator
+spec:
+  installPlanApproval: Manual
+  name: sriov-network-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: support-log-gather-operator
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: support-log-gather-operator-2307a
+  namespace: support-log-gather-operator
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: support-log-gather-operator
+  namespace: support-log-gather-operator
+spec:
+  installPlanApproval: Manual
+  name: support-log-gather-operator
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: tech-preview
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: tempo-product
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: tempo-product-d142b
+  namespace: tempo-product
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: tempo-product
+  namespace: tempo-product
+spec:
+  installPlanApproval: Manual
+  name: tempo-product
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: topology-aware-lifecycle-manager
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: topology-aware-lifecycle-manager-f556a
+  namespace: topology-aware-lifecycle-manager
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: topology-aware-lifecycle-manager
+  namespace: topology-aware-lifecycle-manager
+spec:
+  installPlanApproval: Manual
+  name: topology-aware-lifecycle-manager
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    workload.openshift.io/allowed: management
+  name: vertical-pod-autoscaler
+  labels:
+    openshift.io/cluster-monitoring: "true"
+
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: vertical-pod-autoscaler-7e8f4
+  namespace: vertical-pod-autoscaler
+spec:
+  upgradeStrategy: Default
+
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+  name: vertical-pod-autoscaler
+  namespace: vertical-pod-autoscaler
+spec:
+  installPlanApproval: Manual
+  name: vertical-pod-autoscaler
+  source: prega-operator-index
+  sourceNamespace: openshift-marketplace
+  channel: stable
