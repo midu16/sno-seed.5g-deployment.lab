@@ -168,6 +168,11 @@ jobs:
             sudo make imageset-prega VERSION="${OCP_VERSION}"
           fi
 
+      - name: Review generated imageset-config.yml
+        run: |
+          echo "Generated imageset-config.yml:"
+          cat "${{ github.event.inputs.imageset_config }}"
+
       - name: Run oc-mirror v2
         run: |
           set -euo pipefail
